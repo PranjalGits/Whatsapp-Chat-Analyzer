@@ -75,6 +75,13 @@ if uploaded_file is not None:
         st.title('Most Commmon Words')
         st.pyplot(fig)
 
+        # Emoji Analysis
+        st.title('Emoji Analysis')
+        emoji_df = helper.emoji_analysis(selected_sender, df)
+        fig = helper.plot_emoji_analysis(emoji_df)
+        st.pyplot(fig)
+
+
 
 
 
