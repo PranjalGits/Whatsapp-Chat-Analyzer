@@ -83,38 +83,54 @@ def most_common_words(selected_Sender,df):
     most_common_df = pd.DataFrame(Counter(words).most_common(20))
     return most_common_df
 
-def emoji_analysis(selected_Sender, df):
+def monthly_timeline(selected_Sender,df):
+
     if selected_Sender != 'Overall':
         df = df[df['Sender'] == selected_Sender]
 
-    # Extract emojis from messages
-    emojis = []
-    for message in df['Message']:
-        emojis.extend(c for c in message if c in emoji.emoji_count)
+    timeline = df.groupby(['Year', 'Month_num', 'Month']).count()['Message'].reset_index()
 
-    # Count frequency of each emoji
-    emoji_counter = Counter(emojis)
+    time = []
+    for i in range(timeline.shape[0]):
+        time.append(timeline['Month'][i] + "-" + str(timeline['Year'][i]))
 
-    # Convert emoji_counter to DataFrame
-    emoji_df = pd.DataFrame.from_dict(emoji_counter, orient='index', columns=['Frequency'])
+    timeline['Time'] = time
 
-    # Sort DataFrame by frequency
-    emoji_df = emoji_df.sort_values(by='Frequency', ascending=False)
-
-    return emoji_df
-
-def plot_emoji_analysis(emoji_df):
-    fig, ax = plt.subplots()
-    emoji_df.head(10).plot(kind='bar', ax=ax)
-    ax.set_title('Top 10 Most Used Emojis')
-    ax.set_xlabel('Emoji')
-    ax.set_ylabel('Frequency')
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    return fig
+    return timeline
 
 
+def daily_timeline(selected_Sender,df):
+
+    if selected_Sender != 'Overall':
+        df = df[df['Sender'] == selected_Sender]
+
+    daily_timeline = df.groupby('Only_Date').count()['Message'].reset_index()
+
+    return daily_timeline
+
+def week_activity_map(selected_Sender,df):
+
+    if selected_Sender != 'Overall':
+        df = df[df['Sender'] == selected_Sender]
+
+    return df['Day_Name'].value_counts()
 
 
+def month_activity_map(selected_Sender,df):
+
+    if selected_Sender != 'Overall':
+        df = df[df['Sender'] == selected_Sender]
+
+    return df['Month'].value_counts()
+
+
+def activity_heatmap(selected_Sender,df):
+
+    if selected_Sender != 'Overall':
+        df = df[df['Sender'] == selected_Sender]
+
+    user_heatmap = df.pivot_table(index='Day_Name', columns='period', values='Message', aggfunc='count').fillna(0)
+
+    return user_heatmap
 
 
