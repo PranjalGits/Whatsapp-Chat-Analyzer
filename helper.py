@@ -4,6 +4,8 @@ extract = URLExtract()
 import pandas as pd
 from collections import Counter
 from textblob import TextBlob
+from datetime import timedelta
+import seaborn as sns
 import emoji
 import emoji_data_python
 import regex
@@ -150,5 +152,32 @@ def analyze_emotion(message):
         return 'Neutral'
 
 
+def calculate_avg_reply_time(df):
+    avg_reply_times = {}
+    for sender in df['Sender'].unique():
+        sender_df = df[df['Sender'] == sender]
+        reply_times = []
+        previous_message_time = None
+        for index, row in sender_df.iterrows():
+            if previous_message_time is not None:
+                reply_time = row['Date'] - previous_message_time
+                reply_times.append(reply_time.total_seconds() / 3600)  # Convert to minutes
+            previous_message_time = row['Date']
+        if reply_times:
+            avg_reply_times[sender] = sum(reply_times) / len(reply_times)
+        else:
+            avg_reply_times[sender] = 0  # No reply time recorded
+    return avg_reply_times
 
 
+def plot_reply_time(reply_times):
+    plt.figure(figsize=(10, 6))
+    for sender, times in reply_times.items():
+        plt.scatter([sender] * len(times), times, label=sender)
+    plt.xlabel('Sender')
+    plt.ylabel('Reply Time (minutes)')
+    plt.title('Reply Time for Each Message Sent')
+    plt.xticks(rotation=45)
+    plt.legend()
+    plt.grid(True)
+    return plt

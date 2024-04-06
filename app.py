@@ -44,6 +44,9 @@ if uploaded_file is not None:
             st.header("Links Shared")
             st.title(num_links)
 
+
+
+
         # monthly timeline
         st.title("Monthly Timeline")
         timeline = helper.monthly_timeline(selected_sender, df)
@@ -123,6 +126,25 @@ if uploaded_file is not None:
         # Emotion analysis
         st.title('Emotion Analysis')
         st.write(emotion_counts)
+        st.bar_chart(emotion_counts)
+
+        # Reply time analysis
+        st.title('Average Reply Time Analysis')
+        avg_reply_times = helper.calculate_avg_reply_time(df)
+        st.write("Average Reply Time for Each Sender (in hours):")
+        st.write(avg_reply_times)
+        st.write(
+            "\nNote: If the average reply time is low, it indicates fast replies. Conversely, a high average reply time suggests delayed responses.")
+        st.title('Average Reply Time for Each Sender')
+        fig, ax = plt.subplots()
+        plt.bar(avg_reply_times.keys(), avg_reply_times.values())
+        plt.xlabel('Sender')
+        plt.ylabel('Average Reply Time (hours)')
+        plt.title('Average Reply Time for Each Sender')
+        plt.xticks(rotation='vertical')
+        plt.grid(True)
+        st.pyplot(fig)
+
 
 
 
