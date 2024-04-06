@@ -3,6 +3,7 @@ from wordcloud import WordCloud
 extract = URLExtract()
 import pandas as pd
 from collections import Counter
+from textblob import TextBlob
 import emoji
 import emoji_data_python
 import regex
@@ -28,8 +29,12 @@ def fetch_stats(selected_Sender,df):
     for message in df["Message"]:
         links.extend(extract.find_urls(message))
 
+    # Emotion analysis
+    emotions = [analyze_emotion(message) for message in df['Message']]
+    emotion_counts = Counter(emotions)
 
-    return num_messages, len(words), num_media_messages, len(links)
+
+    return num_messages, len(words), num_media_messages, len(links), emotion_counts
 
 
 def most_busy_Senders(df):
@@ -132,5 +137,18 @@ def activity_heatmap(selected_Sender,df):
     user_heatmap = df.pivot_table(index='Day_Name', columns='period', values='Message', aggfunc='count').fillna(0)
 
     return user_heatmap
+
+
+def analyze_emotion(message):
+    blob = TextBlob(message)
+    sentiment_score = blob.sentiment.polarity
+    if sentiment_score > 0:
+        return 'Positive'
+    elif sentiment_score < 0:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+
 
 

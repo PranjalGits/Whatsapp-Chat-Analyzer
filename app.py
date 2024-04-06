@@ -26,7 +26,7 @@ if uploaded_file is not None:
 
     if st.sidebar.button("Show Analysis"):
 
-        num_messages, words, num_media_messages, num_links = helper.fetch_stats(selected_sender,df)
+        num_messages, words, num_media_messages, num_links, emotion_counts = helper.fetch_stats(selected_sender,df)
         st.title("Top Statistics:-")
 
         col1, col2, col3, col4 = st.columns(4)
@@ -119,6 +119,10 @@ if uploaded_file is not None:
 
         st.title('Most Commmon Words')
         st.pyplot(fig)
+
+        # Emotion analysis
+        st.title('Emotion Analysis')
+        st.write(emotion_counts)
 
 
 
